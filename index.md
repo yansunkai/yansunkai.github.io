@@ -4,3 +4,5 @@
 - kubernetes
   - dynamic admission control
     - [Initializer](/categories/kubernetes/dynamic_admission_control.md)
+  - loop controller
+    - [Informer](/categories/kubernetes/informer.md)
