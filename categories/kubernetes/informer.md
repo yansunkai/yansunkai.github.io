@@ -105,8 +105,8 @@ func NewInformer(
 
 	return clientState, newInformer(lw, objType, resyncPeriod, h, clientState)
 }
-这里我们看到，首先会NewStore
 ```
+这里我们看到，首先会调用NewStore创建一个本地缓存，这个本地缓存可以减少client对API server调用从而减小API server的压力。
 #### newInformer
 ```go
 func newInformer(
