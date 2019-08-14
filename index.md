@@ -7,3 +7,4 @@
   - loop controller
     - [Informer](/categories/kubernetes/informer.md)
     - [SharedInformer](/categories/kubernetes/shared_informer.md)
+    - [Custom Controller](/categories/kubernetes/custom_controller.md)
