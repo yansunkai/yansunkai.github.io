@@ -2,6 +2,7 @@
 - docker
   - [容器隔离](/categories/docker/docker_namespace.md)
   - [资源限制](/categories/docker/docker_cgroup.md)
+  - [容器镜像](/categories/docker/rootfs.md)
 - kubernetes
   - dynamic admission control
     - [Initializer](/categories/kubernetes/dynamic_admission_control.md)
