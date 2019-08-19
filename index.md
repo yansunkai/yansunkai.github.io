@@ -13,3 +13,4 @@
     - [CRD](/categories/kubernetes/custom_resource_definition.md)
   - volume
     - [FlexVolume](/categories/kubernetes/flexvolume.md)
+    - [CSI](/categories/kubernetes/csi.md)
