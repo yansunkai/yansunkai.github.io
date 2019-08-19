@@ -11,3 +11,5 @@
     - [SharedInformer](/categories/kubernetes/shared_informer.md)
     - [Custom Controller](/categories/kubernetes/custom_controller.md)
     - [CRD](/categories/kubernetes/custom_resource_definition.md)
+  - volume
+    - [FlexVolume](/categories/kubernetes/flexvolume.md)
