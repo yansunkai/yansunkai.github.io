@@ -63,4 +63,61 @@ External Attacher这个也太watch APIServer的VolumeAttachment API对象的变�
 ![1](../../image/kubernetes/csi1.png)   
 
 
-具体代码待补充。。。。。
+## Dynamic Provisioning
+首先PersistentVolumeBinderController控制循环会去watch PVC的变化，但已有的volume没有符合条件的时候，就会给PVC加上下面的Annotation。  
+```go
+AnnStorageProvisioner = "volume.beta.kubernetes.io/storage-provisioner"
+```
+关键函数：  
+```go
+controllers["persistentvolume-binder"] = startPersistentVolumeBinderController
+```
+(ctrl *PersistentVolumeController) syncUnboundClaim
+```go
+func (ctrl *PersistentVolumeController) syncUnboundClaim(claim *v1.PersistentVolumeClaim) error {
+	// This is a new PVC that has not completed binding
+	// OBSERVATION: pvc is "Pending"
+	if claim.Spec.VolumeName == "" {
+		// User did not care which PV they get.
+		delayBinding, err := pvutil.IsDelayBindingMode(claim, ctrl.classLister)
+		if err != nil {
+			return err
+		}
+
+		// [Unit test set 1]
+		volume, err := ctrl.volumes.findBestMatchForClaim(claim, delayBinding)
+		if err != nil {
+			klog.V(2).Infof("synchronizing unbound PersistentVolumeClaim[%s]: Error finding PV for claim: %v", claimToClaimKey(claim), err)
+			return fmt.Errorf("Error finding PV for claim %q: %v", claimToClaimKey(claim), err)
+		}
+		if volume == nil {
+			klog.V(4).Infof("synchronizing unbound PersistentVolumeClaim[%s]: no volume found", claimToClaimKey(claim))
+			// No PV could be found
+			// OBSERVATION: pvc is "Pending", will retry
+			switch {
+			case delayBinding && !pvutil.IsDelayBindingProvisioning(claim):
+				ctrl.eventRecorder.Event(claim, v1.EventTypeNormal, events.WaitForFirstConsumer, "waiting for first consumer to be created before binding")
+			case v1helper.GetPersistentVolumeClaimClass(claim) != "":
+				if err = ctrl.provisionClaim(claim); err != nil {
+					return err
+				}
+```
+(ctrl *PersistentVolumeController) provisionClaim
+(ctrl *PersistentVolumeController) provisionClaimOperationExternal
+(ctrl *PersistentVolumeController) setClaimProvisioner
+```go
+ctrl.eventRecorder.Event(claim, v1.EventTypeNormal, events.ExternalProvisioning, msg)
+```
+
+然后externla-provisioner watch到event，通过grpc调用CSI ControllerServer的CreateVolume创建volume。  
+externla-provisioner代码：[LINK](https://github.com/kubernetes-csi/external-provisioner)  
+
+接着是startAttachDetachController控制器循环，检查pod的pv是否已经和node挂载，如果未挂载就创建VolumeAttachment  
+```go
+controllers["attachdetach"] = startAttachDetachController  
+```
+
+然后就是external-attacher watch VolumeAttachment API对象的变化，去调用CSI ControllerServer的ControllerPublishVolume进程进行attach操作  
+external-attacher代码：[LINK](https://github.com/kubernetes-csi/external-attacher)   
+
+最后kubelet的VolumeManagerReconciler控制循环调用CSI Node完成volume的mount操作。
