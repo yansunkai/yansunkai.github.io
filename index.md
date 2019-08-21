@@ -16,3 +16,4 @@
     - [CSI](/categories/kubernetes/csi.md)
   - network
     - [容器基础网络](/categories/kubernetes/network/docker0.md)
+    - [跨网络通信Flannel](/categories/kubernetes/network/flannel.md)
