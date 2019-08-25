@@ -219,9 +219,9 @@ spec:
         share: "dws_nas_scratch"
 ```
 效果：   
-![1](../../image/kubernetes/flexvolume1.png)   
+![1](../../../image/kubernetes/flexvolume1.png)   
 
-![2](../../image/kubernetes/flexvolume2.png)   
+![2](../../../image/kubernetes/flexvolume2.png)   
 
 具体可以参考：[LINK](https://github.com/kubernetes/examples/tree/master/staging/volumes/flexvolume)
 

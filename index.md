@@ -12,9 +12,10 @@
     - [Custom Controller](/categories/kubernetes/custom_controller.md)
     - [CRD](/categories/kubernetes/custom_resource_definition.md)
   - volume
-    - [FlexVolume](/categories/kubernetes/flexvolume.md)
-    - [CSI](/categories/kubernetes/csi.md)
+    - [FlexVolume](/categories/kubernetes/storage/flexvolume.md)
+    - [CSI](/categories/kubernetes/storage/csi.md)
   - network
     - [容器基础网络](/categories/kubernetes/network/docker0.md)
+    - [网络插件CNI](/categories/kubernetes/network/cni.md)
     - [跨网络通信Flannel](/categories/kubernetes/network/flannel.md)
     - [跨网络通信Calico](/categories/kubernetes/network/calico.md)
