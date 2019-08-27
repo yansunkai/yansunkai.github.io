@@ -1,9 +1,12 @@
 ## Welcome to GitHub Pages
+- golang
+  - [动态json解析](/categories/golang/动态json解析.md)
 - docker
   - [容器隔离](/categories/docker/docker_namespace.md)
   - [资源限制](/categories/docker/docker_cgroup.md)
   - [容器镜像](/categories/docker/rootfs.md)
 - kubernetes
+  - [pod创建过程](https://github.com/yansunkai/what-happens-when-k8s/blob/master/README.md)
   - dynamic admission control
     - [Initializer](/categories/kubernetes/dynamic_admission_control.md)
   - loop controller

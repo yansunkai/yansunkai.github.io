@@ -60,7 +60,7 @@ External Attacher这个也太watch APIServer的VolumeAttachment API对象的变�
 而Node的mount操作是由kubelet的VolumeManagerReconciler调用的。
 
 流程图（网络图）：  
-![1](../../image/kubernetes/csi1.png)   
+![1](../../image/kubernetes/CSI1.png)   
 
 
 ## Dynamic Provisioning
