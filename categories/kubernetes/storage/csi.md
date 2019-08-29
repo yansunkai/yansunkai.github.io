@@ -60,14 +60,16 @@ External Attacher这个也太watch APIServer的VolumeAttachment API对象的变�
 而Node的mount操作是由kubelet的VolumeManagerReconciler调用的。
 
 流程图（网络图）：  
-![1](../../image/kubernetes/CSI1.png)   
+![1](../../../image/kubernetes/CSI1.png)   
 
 
-## Dynamic Provisioning
-首先PersistentVolumeBinderController控制循环会去watch PVC的变化，但已有的volume没有符合条件的时候，就会给PVC加上下面的Annotation。  
+## PVC创建流程(Dynamic Provisioning)
+首先PersistentVolumeBinderController控制循环会去watch PVC的变化，但已有的volume没有符合条件的时候，
+根据storageClass的Provisioner去找到plugin，如果不存在plugin或者Migrated的话，就由CSI处理，其实就是给PVC加上下面的Annotation。  
 ```go
 AnnStorageProvisioner = "volume.beta.kubernetes.io/storage-provisioner"
 ```
+
 关键函数：  
 ```go
 controllers["persistentvolume-binder"] = startPersistentVolumeBinderController
@@ -102,15 +104,88 @@ func (ctrl *PersistentVolumeController) syncUnboundClaim(claim *v1.PersistentVol
 					return err
 				}
 ```
-(ctrl *PersistentVolumeController) provisionClaim
-(ctrl *PersistentVolumeController) provisionClaimOperationExternal
-(ctrl *PersistentVolumeController) setClaimProvisioner
+```go
+func (ctrl *PersistentVolumeController) provisionClaim(claim *v1.PersistentVolumeClaim) error {
+	if !ctrl.enableDynamicProvisioning {
+		return nil
+	}
+	klog.V(4).Infof("provisionClaim[%s]: started", claimToClaimKey(claim))
+	opName := fmt.Sprintf("provision-%s[%s]", claimToClaimKey(claim), string(claim.UID))
+	plugin, storageClass, err := ctrl.findProvisionablePlugin(claim)
+	if err != nil {
+		ctrl.eventRecorder.Event(claim, v1.EventTypeWarning, events.ProvisioningFailed, err.Error())
+		klog.Errorf("error finding provisioning plugin for claim %s: %v", claimToClaimKey(claim), err)
+		// failed to find the requested provisioning plugin, directly return err for now.
+		// controller will retry the provisioning in every syncUnboundClaim() call
+		// retain the original behavior of returning nil from provisionClaim call
+		return nil
+	}
+	ctrl.scheduleOperation(opName, func() error {
+		// create a start timestamp entry in cache for provision operation if no one exists with
+		// key = claimKey, pluginName = provisionerName, operation = "provision"
+		claimKey := claimToClaimKey(claim)
+		ctrl.operationTimestamps.AddIfNotExist(claimKey, ctrl.getProvisionerName(plugin, storageClass), "provision")
+		var err error
+		if plugin == nil || plugin.IsMigratedToCSI() {
+			_, err = ctrl.provisionClaimOperationExternal(claim, plugin, storageClass)
+		} else {
+			_, err = ctrl.provisionClaimOperation(claim, plugin, storageClass)
+		}
+```
+```go
+func (ctrl *PersistentVolumeController) provisionClaimOperationExternal(
+	claim *v1.PersistentVolumeClaim,
+	plugin vol.ProvisionableVolumePlugin,
+	storageClass *storage.StorageClass) (string, error) {
+	claimClass := v1helper.GetPersistentVolumeClaimClass(claim)
+	klog.V(4).Infof("provisionClaimOperationExternal [%s] started, class: %q", claimToClaimKey(claim), claimClass)
+	// Set provisionerName to external provisioner name by setClaimProvisioner
+	var err error
+	provisionerName := storageClass.Provisioner
+	if plugin != nil {
+		// update the provisioner name to use the CSI in-tree name
+		provisionerName, err = ctrl.getCSINameFromIntreeName(storageClass.Provisioner)
+		if err != nil {
+			strerr := fmt.Sprintf("error getting CSI name for In tree plugin %s: %v", storageClass.Provisioner, err)
+			klog.V(2).Infof("%s", strerr)
+			ctrl.eventRecorder.Event(claim, v1.EventTypeWarning, events.ProvisioningFailed, strerr)
+			return provisionerName, err
+		}
+	}
+	// Add provisioner annotation so external provisioners know when to start
+	newClaim, err := ctrl.setClaimProvisioner(claim, provisionerName)
+	if err != nil {
+```
+```go
+func (ctrl *PersistentVolumeController) setClaimProvisioner(claim *v1.PersistentVolumeClaim, provisionerName string) (*v1.PersistentVolumeClaim, error) {
+	if val, ok := claim.Annotations[pvutil.AnnStorageProvisioner]; ok && val == provisionerName {
+		// annotation is already set, nothing to do
+		return claim, nil
+	}
+
+	// The volume from method args can be pointing to watcher cache. We must not
+	// modify these, therefore create a copy.
+	claimClone := claim.DeepCopy()
+	metav1.SetMetaDataAnnotation(&claimClone.ObjectMeta, pvutil.AnnStorageProvisioner, provisionerName)
+	newClaim, err := ctrl.kubeClient.CoreV1().PersistentVolumeClaims(claim.Namespace).Update(claimClone)
+	if err != nil {
+		return newClaim, err
+	}
+	_, err = ctrl.storeClaimUpdate(newClaim)
+	if err != nil {
+		return newClaim, err
+	}
+	return newClaim, nil
+}
+```
+
 ```go
 ctrl.eventRecorder.Event(claim, v1.EventTypeNormal, events.ExternalProvisioning, msg)
 ```
 
 然后externla-provisioner watch到event，通过grpc调用CSI ControllerServer的CreateVolume创建volume。  
 externla-provisioner代码：[LINK](https://github.com/kubernetes-csi/external-provisioner)  
+
 
 接着是startAttachDetachController控制器循环，检查pod的pv是否已经和node挂载，如果未挂载就创建VolumeAttachment  
 ```go
