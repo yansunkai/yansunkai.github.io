@@ -2,6 +2,8 @@
 - golang
   - [动态json解析](/categories/golang/动态json解析.md)
   - [rpc over http](/categories/golang/rpcOverHttp.md)
+  - [jsonRpc](/categories/golang/jsonrpc.md)
+  - [grpc](/categories/golang/grpc.md)
 - docker
   - [容器隔离](/categories/docker/docker_namespace.md)
   - [资源限制](/categories/docker/docker_cgroup.md)
