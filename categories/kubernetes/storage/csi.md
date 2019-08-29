@@ -179,20 +179,18 @@ func (ctrl *PersistentVolumeController) setClaimProvisioner(claim *v1.Persistent
 }
 ```
 
-```go
-ctrl.eventRecorder.Event(claim, v1.EventTypeNormal, events.ExternalProvisioning, msg)
-```
-
-然后externla-provisioner watch到event，通过grpc调用CSI ControllerServer的CreateVolume创建volume。  
+然后externla-provisioner watch到有"volume.beta.kubernetes.io/storage-provisioner"的pvc，
+就会通过grpc调用CSI ControllerServer的CreateVolume创建volume。  
 externla-provisioner代码：[LINK](https://github.com/kubernetes-csi/external-provisioner)  
 
 
-接着是startAttachDetachController控制器循环，检查pod的pv是否已经和node挂载，如果未挂载就创建VolumeAttachment  
+接着是startAttachDetachController控制器循环，检查pod的pv是否已经和node绑定，如果没有attach就创建VolumeAttachment  
 ```go
 controllers["attachdetach"] = startAttachDetachController  
 ```
 
-然后就是external-attacher watch VolumeAttachment API对象的变化，去调用CSI ControllerServer的ControllerPublishVolume进程进行attach操作  
+然后就是external-attacher watch VolumeAttachment API对象，去调用CSI ControllerServer的ControllerPublishVolume进程进行attach操作。  
+attach的工作就是调用后端存储api对VolumeId和NodeId进行绑定。
 external-attacher代码：[LINK](https://github.com/kubernetes-csi/external-attacher)   
 
 最后kubelet的VolumeManagerReconciler控制循环调用CSI Node完成volume的mount操作。
