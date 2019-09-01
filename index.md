@@ -12,6 +12,7 @@
   - [pod创建过程](https://github.com/yansunkai/what-happens-when-k8s/blob/master/README.md)
   - dynamic admission control
     - [Initializer](/categories/kubernetes/dynamic_admission_control.md)
+    - [Webhook](/categories/kubernetes/mutating_admission_webhook.md)
   - loop controller
     - [Informer](/categories/kubernetes/informer.md)
     - [SharedInformer](/categories/kubernetes/shared_informer.md)
