@@ -9,6 +9,8 @@
   - [资源限制](/categories/docker/docker_cgroup.md)
   - [容器镜像](/categories/docker/rootfs.md)
 - kubernetes
+  - api server
+    - [ETCD存储实现](/categories/kubernetes/apiserver/etcd存储.md)
   - [pod创建过程](https://github.com/yansunkai/what-happens-when-k8s/blob/master/README.md)
   - dynamic admission control
     - [Initializer](/categories/kubernetes/dynamic_admission_control.md)
