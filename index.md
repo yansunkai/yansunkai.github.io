@@ -11,6 +11,7 @@
 - kubernetes
   - api server
     - [ETCD存储实现](/categories/kubernetes/apiserver/etcd存储.md)
+    - [API实现过程](/categories/kubernetes/apiserver/API安装.md)
   - [pod创建过程](https://github.com/yansunkai/what-happens-when-k8s/blob/master/README.md)
   - dynamic admission control
     - [Initializer](/categories/kubernetes/dynamic_admission_control.md)
