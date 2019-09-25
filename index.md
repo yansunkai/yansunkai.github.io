@@ -4,6 +4,7 @@
   - [rpc over http](/categories/golang/rpcOverHttp.md)
   - [jsonRpc](/categories/golang/jsonrpc.md)
   - [grpc](/categories/golang/grpc.md)
+  - [kubernetes中workQueue实现](/categories/golang/workqueue实现.md)
 - docker
   - [容器隔离](/categories/docker/docker_namespace.md)
   - [资源限制](/categories/docker/docker_cgroup.md)
