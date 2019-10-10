@@ -6,6 +6,7 @@
   - [grpc](/categories/golang/grpc.md)
   - [kubernetes中workQueue实现](/categories/golang/workqueue实现.md)
   - [rateLimiter实现](/categories/golang/ratelimit实现.md)
+  - [map实现](/categories/golang/map和cmap.md)
 - docker
   - [容器隔离](/categories/docker/docker_namespace.md)
   - [资源限制](/categories/docker/docker_cgroup.md)
