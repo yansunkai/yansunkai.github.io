@@ -97,7 +97,7 @@ type ContainerManager interface {
 infra容器的作用是：主要是为pod里面的容器设置共享的namespace，挂在volume等操作。  
 
 ### Streaming API（exec，log）
-exec，log等操作是通过与CRI shim建立长连接来维护数据的。
-![1](../../../image/kubernetes/cri2.png)  
-1.首先API server通过kubelet发起CRI的Exec调用，然后CRI shim返回URL（streaming server地址和端口）
-2.api server通过返回的URL建立长连接，然后进行通信。
+exec，log等操作是通过与CRI shim建立长连接来维护数据的。  
+![1](../../../image/kubernetes/cri2.png)    
+1.首先API server通过kubelet发起CRI的Exec调用，然后CRI shim返回URL（streaming server地址和端口）   
+2.api server通过返回的URL建立长连接，然后进行通信。  
