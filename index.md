@@ -32,3 +32,4 @@
     - [网络插件CNI](/categories/kubernetes/network/cni.md)
     - [跨网络通信Flannel](/categories/kubernetes/network/flannel.md)
     - [跨网络通信Calico](/categories/kubernetes/network/calico.md)
+    - [service](/categories/kubernetes/network/service.md)

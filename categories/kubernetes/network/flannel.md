@@ -32,7 +32,7 @@ VXLAN主要是通过VTEP（VXLAN Tunnel End Point）设备，所有连接到这�
 和udp模式一样，container-1发出去的包到达docker0网桥然后会被路由到flannel.1设备，flannel.1设备就是VTEP设备，
 这样数据包就到达了二层网络的一个口，这时候vxlan就负责把它发送到另外一台机器的VTEP设备，这样就达到跨主机通信的目的。  
 具体怎么工作：  
-首先每台集群的机器都运行着flanneld进程，每当VM加入集群就会在在前VM添加如下路由规则，比如node2加入后：  
+首先每台集群的机器都运行着flanneld进程，每当VM加入集群就会在前VM添加如下路由规则，比如node2加入后：  
 ```bash
 route -n
 Kernel IP routing table
