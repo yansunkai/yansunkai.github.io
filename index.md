@@ -35,3 +35,5 @@
     - [service](/categories/kubernetes/network/service.md)
   - runtime
     - [运行时接口CRI](/categories/kubernetes/runtime/CRI.md)
+- other
+  - [serverPush方式总结](/categories/other/服务端推送的一些方法.md)
