@@ -9,6 +9,7 @@
   - [map实现](/categories/golang/map和cmap.md)
   - [channel的实现](/categories/golang/channel的实现.md)
   - [mutex的实现](/categories/golang/mutex实现.md)
+  - [fasthttp的workpool实现](/categories/golang/fasthttp的workpool实现.md)
 - docker
   - [容器隔离](/categories/docker/docker_namespace.md)
   - [资源限制](/categories/docker/docker_cgroup.md)
